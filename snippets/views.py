@@ -10,10 +10,6 @@ from .serializers import SnippetSerializer, CategorySerializer
 class SnippetViewDetail(DetailView):
     model = Snippet
 
-    def get_object(self, queryset=None):
-        return self.model.objects.get(
-            active=True, path=self.kwargs.get('path', None))
-
     def get_context_data(self, **kwargs):
         context = super(SnippetViewDetail, self).get_context_data(**kwargs)
         context['categories'] = Category.objects.filter().distinct()

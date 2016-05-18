@@ -13,7 +13,7 @@ urlpatterns = [
     url(r'^api/', include(router.urls)),
 
     url(r'^$', SnippetViewList.as_view(), name='snippet-list'),
-    url(r'^(?P<path>.*)$', SnippetViewDetail.as_view(), name='snippet-detail'),
+    url(r'^(?P<slug>.*)$', SnippetViewDetail.as_view(), name='snippet-detail'),
 
 
 
