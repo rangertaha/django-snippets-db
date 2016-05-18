@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.forms import ModelForm
-from .models import File
+from .models import Snippet
 
 
-class FileForm(ModelForm):
+class SnippetForm(ModelForm):
     class Meta:
-        model = File
-        fields = ['system', 'applications', 'categories', 'path', 'description']
+        model = Snippet
+        fields = ['categories', 'title', 'code', 'description']

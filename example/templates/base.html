@@ -1,13 +1,13 @@
 {% load staticfiles %}
 {% spaceless %}
-<html lang="en" ng-app="">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% block meta %}
-        <meta name="description" content="{{ object.description }}">
-        <meta name="keywords" content="Hacking,CYBINT, OSINT, GEOINT, SIGINT, HUMINT, Intelligence, Cyber Warfare, Intelligence Based Cyber Security">
-        <meta name="author" content="cybint.io, cybint-io">
+        <meta name="description" content="">
+        <meta name="keywords" content="">
+        <meta name="author" content="">
     {% endblock %}
 
     <title>{% block title %}{{ object.title|default:'' }}{% endblock %}</title>
@@ -23,7 +23,7 @@
 </head>
 
 <body>
-{% block navbar %}{% include 'fsdb/../../templates/snippets/navbar.html' %}{% endblock %}
+{% block navbar %}{% include 'snippets/navbar.html' %}{% endblock %}
 {% block alerts %}{% endblock %}
 {% block container %}
     <div class="container-fluid">

@@ -1,42 +1,27 @@
 # -*- coding: utf-8 -*-
-import csv
-
-from django.utils.six.moves import range
 from django.http import HttpResponse
-from django.http import StreamingHttpResponse
 from django.views.generic import ListView, DetailView
 from rest_framework import viewsets
 
-from .models import Application, File, Category, System
-from .serializers import FileSerializer, SystemSerializer, \
-    CategorySerializer, ApplicationSerializer
+from .models import Snippet, Category
+from .serializers import SnippetSerializer, CategorySerializer
 
 
-class ApplicationViewDetail(DetailView):
-    model = Application
-
-
-class ApplicationViewList(ListView):
-    model = Application
-
-
-class FileViewDetail(DetailView):
-    model = File
+class SnippetViewDetail(DetailView):
+    model = Snippet
 
     def get_object(self, queryset=None):
         return self.model.objects.get(
             active=True, path=self.kwargs.get('path', None))
 
     def get_context_data(self, **kwargs):
-        context = super(FileViewDetail, self).get_context_data(**kwargs)
-        context['systems'] = System.objects.filter().distinct()
-        context['applications'] = Application.objects.filter().distinct()
+        context = super(SnippetViewDetail, self).get_context_data(**kwargs)
         context['categories'] = Category.objects.filter().distinct()
         return context
 
 
-class FileViewList(ListView):
-    model = File
+class SnippetViewList(ListView):
+    model = Snippet
     paginate_by = 5
 
     def get_queryset(self):
@@ -48,9 +33,7 @@ class FileViewList(ListView):
             return self.model.objects.all()
 
     def get_context_data(self, **kwargs):
-        context = super(FileViewList, self).get_context_data(**kwargs)
-        context['systems'] = System.objects.filter().distinct()
-        context['applications'] = Application.objects.filter().distinct()
+        context = super(SnippetViewList, self).get_context_data(**kwargs)
         context['categories'] = Category.objects.filter().distinct()
         return context
 
@@ -63,28 +46,12 @@ class CategoryViewList(ListView):
     model = Category
 
 
-class SystemViewDetail(DetailView):
-    model = System
-
-
-class SystemViewList(ListView):
-    model = System
-
-
-class FileAPIViewSet(viewsets.ModelViewSet):
+class SnippetAPIViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    queryset = File.objects.all().order_by('-rank')
-    serializer_class = FileSerializer
-
-
-class SystemAPIViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to b
-    """
-    queryset = System.objects.all()
-    serializer_class = SystemSerializer
+    queryset = Snippet.objects.all().order_by('-rank')
+    serializer_class = SnippetSerializer
 
 
 class CategoryAPIViewSet(viewsets.ModelViewSet):
@@ -93,27 +60,3 @@ class CategoryAPIViewSet(viewsets.ModelViewSet):
     """
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-
-
-class ApplicationAPIViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to b
-    """
-    queryset = Application.objects.all()
-    serializer_class = ApplicationSerializer
-
-
-
-
-def csv_download(request):
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="filelist.csv"'
-
-    writer = csv.writer(response)
-    for f in File.objects.all():
-        categories = [c.name for c in f.categories.all()]
-        applications = [a.name for a in f.applications.all()]
-
-        writer.writerow([f.rank, f.path, f.name, f.system, ','.join(applications), ','.join(categories), f.description.encode('utf-8')])
-
-    return response

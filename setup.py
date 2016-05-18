@@ -22,11 +22,11 @@ def get_readme():
     return ''
 
 # Use the docstring of the __init__ file to be the description
-DESC = " ".join(__import__('fsdb').__doc__.splitlines()).strip()
+DESC = " ".join(__import__('snippets').__doc__.splitlines()).strip()
 
 setup(
     name="django-snippets-db",
-    version=__import__('fsdb').get_version().replace(' ', '-'),
+    version=__import__('snippets').get_version().replace(' ', '-'),
     url='',
     author='Rangertaha',
     author_email='rangertaha@gmail.com',
