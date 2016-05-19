@@ -25,48 +25,10 @@ ICONS = (
 )
 
 
-class Subscriber(models.Model):
-    name = models.CharField(max_length=132, blank=True, null=True, unique=True)
-    email = models.CharField(max_length=132, blank=True, null=True, unique=True)
-
-    def __unicode__(self):
-        return self.name
-
-
-class System(models.Model):
-    name = models.CharField(max_length=32, blank=True, null=True, unique=True)
-    slug = models.SlugField(max_length=32, blank=True, null=True, unique=True)
-    icon = models.CharField(max_length=32, choices=ICONS, blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
-    count = models.IntegerField(default=0)
-
-    def __unicode__(self):
-        return self.name
-
-    def update_count(self):
-        self.count = len(self.files.all())
-        self.save()
-
-
-class Application(models.Model):
-    name = models.CharField(max_length=32, blank=True, null=True, unique=True)
-    version = models.CharField(max_length=32, blank=True, null=True, unique=True)
-    icon = models.CharField(max_length=32, choices=ICONS, blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
-    count = models.IntegerField(default=0)
-
-    def __unicode__(self):
-        return '{0}:{1}'.format(self.name, self.version)
-
-    def update_count(self):
-        self.count = len(self.files.all())
-        self.save()
-
-
 class Category(models.Model):
-    rank = models.IntegerField(blank=True, null=True)
-    slug = models.SlugField(max_length=32, blank=True, null=True, unique=True)
-    name = models.CharField(max_length=32, blank=True, null=True, unique=True)
+    rank = models.IntegerField(blank=True, null=True, default=0)
+    slug = models.SlugField(max_length=32, unique=True, blank=True, null=True)
+    name = models.CharField(max_length=32, blank=True, null=True)
     icon = models.CharField(max_length=32, choices=ICONS, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     count = models.IntegerField(default=0)
@@ -78,14 +40,10 @@ class Category(models.Model):
     def __unicode__(self):
         return self.name
 
-    def update_count(self):
-        self.count = len(self.files.all())
-        self.save()
-
 
 class Snippet(models.Model):
-    rank = models.IntegerField(blank=True, null=True)
-    slug = models.SlugField(max_length=512, blank=True, null=True)
+    rank = models.IntegerField(blank=True, null=True, default=0)
+    slug = models.SlugField(max_length=512, unique=True, blank=True, null=True)
 
     categories = models.ManyToManyField(Category, blank=True, related_name='snippets')
 
@@ -108,12 +66,10 @@ class Snippet(models.Model):
 @receiver(pre_save, sender=Snippet)
 def pre_snippet(sender, **kwargs):
     snippet = kwargs['instance']
-    if snippet.slug is None or snippet.slug is '':
-        snippet.slug = slugify(snippet.title)
+    snippet.slug = slugify(snippet.title)
 
 
 @receiver(pre_save, sender=Category)
 def slugify_category_name(sender, **kwargs):
     category = kwargs['instance']
-    if category.slug is None or category.slug is '':
-        category.slug = slugify(category.name)
+    category.slug = slugify(category.name)

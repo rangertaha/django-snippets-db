@@ -23,7 +23,7 @@ class SnippetViewList(ListView):
         if self.request.GET.get('q'):
             return self.model.objects.filter(
                 active=True,
-                path__icontains=self.request.GET['q']).distinct()
+                title__icontains=self.request.GET['q']).distinct()
         else:
             return self.model.objects.all()
 
