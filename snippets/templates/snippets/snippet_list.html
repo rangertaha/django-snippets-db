@@ -53,10 +53,10 @@
 
         </div>
         <div class="media-body">
-            <h4 class="media-heading">
+            {% comment %}<h4 class="media-heading">
                 <i class="fa fa-code" aria-hidden="true"></i>&nbsp;
                 <a href="{% url 'snippet-detail' obj.slug %}">{{ obj.title }}</a>
-            </h4>
+            </h4>{% endcomment %}
             <p class="text-success" style="margin-bottom: 2px;">{{ obj.code }}</p>
             <p class="text-muted" style="margin-bottom: 2px;">{{ obj.description }}</p>
 
