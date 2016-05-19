@@ -48,7 +48,7 @@ class Snippet(models.Model):
     categories = models.ManyToManyField(Category, blank=True, related_name='snippets')
 
     title = models.CharField(max_length=512, blank=True, null=True, db_index=True)
-    code = models.TextField(blank=True, null=True)
+    code = models.TextField(blank=True, null=True, unique=True)
     description = models.TextField(blank=True, null=True)
 
     # Metadata
@@ -66,10 +66,12 @@ class Snippet(models.Model):
 @receiver(pre_save, sender=Snippet)
 def pre_snippet(sender, **kwargs):
     snippet = kwargs['instance']
-    snippet.slug = slugify(snippet.title)
+    if not snippet.slug:
+        snippet.slug = slugify(snippet.title)
 
 
 @receiver(pre_save, sender=Category)
 def slugify_category_name(sender, **kwargs):
     category = kwargs['instance']
-    category.slug = slugify(category.name)
+    if not category.slug:
+        category.slug = slugify(category.name)

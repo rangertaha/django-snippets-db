@@ -19,6 +19,6 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Snippet)
 class SnippetAdmin(admin.ModelAdmin):
-    list_display = ('rank', 'title', 'description')
-    search_fields = ('rank', 'title', 'code', 'description')
+    list_display = ('rank', 'code', 'title', 'description')
+    search_fields = ('rank', 'code', 'title', 'code', 'description')
 
