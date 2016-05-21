@@ -2,6 +2,12 @@
 
 {% block navbar %}{% include 'snippets/navbar.html' %}{% endblock %}
 
+{% block breadcrumb %}
+    <ol class="breadcrumb">
+        <li><a href="/">Apps</a></li>
+        <li><a href="{% url 'snippet-list' %}">Snippets</a></li>
+    </ol>
+{% endblock %}
 
 {% block lsidebar %}
 <div class="sidebar-module">
@@ -57,7 +63,7 @@
 
                 <a href="{% url 'snippet-detail' obj.slug %}">{{ obj.title }}</a>
             </h4>
-            <p class="text-success" style="margin-bottom: 2px;">{{ obj.code }}</p>
+            <p class="text-success" style="margin-bottom: 2px;">{{ obj.usage|default:obj.code|truncatechars:50 }}</p>
             <p class="text-muted" style="margin-bottom: 2px;">{{ obj.description }}</p>
 
 

@@ -33,6 +33,8 @@ class Category(models.Model):
     description = models.TextField(blank=True, null=True)
     count = models.IntegerField(default=0)
 
+    # category =
+
     class Meta:
         ordering = ('rank', )
         verbose_name_plural = "Categories"
@@ -42,14 +44,17 @@ class Category(models.Model):
 
 
 class Snippet(models.Model):
+    order = models.IntegerField(blank=True, null=True, default=0)
     rank = models.IntegerField(blank=True, null=True, default=0)
     slug = models.SlugField(max_length=512, unique=True, blank=True, null=True)
-
-    categories = models.ManyToManyField(Category, blank=True, related_name='snippets')
-
     title = models.CharField(max_length=512, blank=True, null=True, db_index=True)
+    usage = models.TextField(blank=True, null=True, unique=True)
     code = models.TextField(blank=True, null=True, unique=True)
+    example = models.TextField(blank=True, null=True, unique=True)
     description = models.TextField(blank=True, null=True)
+
+    snippets = models.ManyToManyField('self', blank=True, related_name='parent')
+    categories = models.ManyToManyField(Category, blank=True, related_name='snippets')
 
     # Metadata
     created = models.DateTimeField(_('Created'), auto_now=True, auto_now_add=False)
