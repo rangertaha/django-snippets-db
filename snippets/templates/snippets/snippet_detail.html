@@ -2,33 +2,40 @@
 
 {% block navbar %}{% include 'snippets/navbar.html' %}{% endblock %}
 
+{% block breadcrumb %}
+    <ol class="breadcrumb">
+        <li><a href="/">Apps</a></li>
+        <li><a href="{% url 'snippet-list' %}">Snippets</a></li>
+    </ol>
+{% endblock %}
+
 {% block lsidebar %}
-    <div class="sidebar-module">
-        <h4>Systems</h4>
-        <ol class="list-unstyled">
-            {% for obj in systems.all %}
-                <li><span class="badge">{{ obj.count }}</span>&nbsp;{{ obj.name }}</li>
-            {% endfor %}
-        </ol>
-    </div>
-    <hr>
-    <div class="sidebar-module">
-        <h4>Applications</h4>
-        <ol class="list-unstyled">
-            {% for obj in applications.all %}
-                <li><span class="badge">{{ obj.count }}</span>&nbsp;{{ obj.name }}</li>
-            {% endfor %}
-        </ol>
-    </div>
-    <hr>
-    <div class="sidebar-module">
-        <h4>Categories</h4>
-        <ol class="list-unstyled">
-            {% for obj in categories.all %}
-                <li><span class="badge">{{ obj.count }}</span>&nbsp;{{ obj.name }}</li>
-            {% endfor %}
-        </ol>
-    </div>
+<div class="sidebar-module">
+    <h4>Systems</h4>
+    <ol class="list-unstyled">
+        {% for obj in systems.all %}
+        <li><span class="badge">{{ obj.count }}</span>&nbsp;{{ obj.name }}</li>
+        {% endfor %}
+    </ol>
+</div>
+<hr>
+<div class="sidebar-module">
+    <h4>Applications</h4>
+    <ol class="list-unstyled">
+        {% for obj in applications.all %}
+        <li><span class="badge">{{ obj.count }}</span>&nbsp;{{ obj.name }}</li>
+        {% endfor %}
+    </ol>
+</div>
+<hr>
+<div class="sidebar-module">
+    <h4>Categories</h4>
+    <ol class="list-unstyled">
+        {% for obj in categories.all %}
+        <li><span class="badge">{{ obj.count }}</span>&nbsp;{{ obj.name }}</li>
+        {% endfor %}
+    </ol>
+</div>
 {% endblock %}
 {% block rsidebar %}{% endblock %}
 
@@ -43,28 +50,34 @@
         box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1) inset;
     }
 </style>
+<div class="page-header" style="margin: 5px 5px;">
+    <h1 style="margin: 5px 5px;">Snippets
+        <small>For Hacking</small>
+    </h1>
+</div>
+{% include 'snippets/snippets/search.html' %}
 
-            {% include 'snippets/snippets/search.html' %}
+<div class="page-header">
+    <h1 style="font-size: 25px;">{{ object.title }}</h1>
+    <h2>
+        <small style="font-size: 14px;">{{ object.usage|default:'' }}</small>
+    </h2>
+</div>
+<pre>{{ object.code }}</pre>
+<p>{{ object.description|default:'' }}</p>
+{% if object.example %}<h4>Example</h4>{% endif %}
+<p>{{ object.example|default:'' }}</p>
 
-            <div class="page-header">
-                <h1 style="font-size: 25px;">{{ object.title }}</h1>
-                <h2><small style="font-size: 14px;">{{ object.usage|default:'' }}</small></h2>
-            </div>
-            <pre>{{ object.code }}</pre>
-            <p>{{ object.description|default:'' }}</p>
-            {% if object.example %}<h4>Example</h4>{% endif %}
-            <p>{{ object.example|default:'' }}</p>
 
+{% if object.system %}
+<i class="fa {{ object.system.icon }} fa-2x" aria-hidden="true"></i>&nbsp;
+{% endif %}
 
-            {% if object.system %}
-            <i class="fa {{ object.system.icon }} fa-2x" aria-hidden="true"></i>&nbsp;
-            {% endif %}
+{% for app in object.applications.all %}
+<i class="fa {{ app.icon }} fa-2x" aria-hidden="true"></i>&nbsp;
+{% endfor %}
 
-            {% for app in object.applications.all %}
-            <i class="fa {{ app.icon }} fa-2x" aria-hidden="true"></i>&nbsp;
-            {% endfor %}
-
-            {% include 'snippets/disqus.html' %}
+{% include 'snippets/disqus.html' %}
 {% endblock %}
 
 
