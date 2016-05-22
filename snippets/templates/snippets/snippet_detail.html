@@ -48,9 +48,12 @@
 
             <div class="page-header">
                 <h1 style="font-size: 25px;">{{ object.title }}</h1>
-                <h2><small style="font-size: 14px;">{{ object.code }}</small></h2>
+                <h2><small style="font-size: 14px;">{{ object.usage|default:'' }}</small></h2>
             </div>
-            <p>{{ object.description }}</p>
+            <pre>{{ object.code }}</pre>
+            <p>{{ object.description|default:'' }}</p>
+            {% if object.example %}<h4>Example</h4>{% endif %}
+            <p>{{ object.example|default:'' }}</p>
 
 
             {% if object.system %}
