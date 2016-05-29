@@ -3,6 +3,7 @@ from django.views.generic import ListView, DetailView
 from rest_framework import viewsets
 
 from .models import Snippet, Category
+from .forms import SnippetForm
 from .serializers import SnippetSerializer, CategorySerializer
 
 
@@ -30,6 +31,7 @@ class SnippetViewList(ListView):
     def get_context_data(self, **kwargs):
         context = super(SnippetViewList, self).get_context_data(**kwargs)
         context['categories'] = Category.objects.filter().distinct()
+        context['form'] = SnippetForm()
         return context
 
 

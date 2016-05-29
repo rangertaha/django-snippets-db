@@ -1,3 +1,4 @@
+{% load bootstrap3 %}
 <div style="padding: 0px 30px 30px 30px;">
 
     <div class="search-bar">
@@ -29,34 +30,24 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="myModalLabel">Modal title</h4>
             </div>
-            <div class="modal-body">
-                <form>
-                    <div class="form-group">
-                        <label for="exampleInputEmail1">File Path</label>
-                        <input type="path" class="form-control" id="InputPath" placeholder="Path/File">
-                    </div>
-                    <div class="form-group">
-                        <label for="exampleInputPassword1">Password</label>
-                        <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-                    </div>
-                    <div class="form-group">
-                        <label for="exampleInputFile">File input</label>
-                        <input type="file" id="exampleInputFile">
+            <form action="" method="post" class="form">{% csrf_token %}
+                <div class="modal-body">
 
-                        <p class="help-block">Example block-level help text here.</p>
-                    </div>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox"> Check me out
-                        </label>
-                    </div>
-                    <button type="submit" class="btn btn-default">Submit</button>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-            </div>
+                    {% bootstrap_form form %}
+
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    {% buttons %}
+                        <button type="submit" class="btn btn-primary">
+                            {% bootstrap_icon "" %} Submit
+                        </button>
+                    {% endbuttons %}
+                </div>
+            </form>
+
         </div>
     </div>
 </div>

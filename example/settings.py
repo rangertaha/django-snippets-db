@@ -134,6 +134,7 @@ INSTALLED_APPS = (
     'snippets',
     'simpleapp',
 
+    'bootstrap3',
     'rest_framework',
 )
 
