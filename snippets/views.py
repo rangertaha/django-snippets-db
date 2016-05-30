@@ -13,6 +13,7 @@ class SnippetViewDetail(DetailView):
     def get_context_data(self, **kwargs):
         context = super(SnippetViewDetail, self).get_context_data(**kwargs)
         context['categories'] = Category.objects.filter().distinct()
+        context['form'] = SnippetForm()
         return context
 
 
