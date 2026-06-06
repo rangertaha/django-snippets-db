@@ -1,8 +1,7 @@
-# -*- coding:utf-8 -*-
 import logging
 
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.template.defaultfilters import slugify
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
@@ -39,7 +38,7 @@ class Category(models.Model):
         ordering = ('rank', )
         verbose_name_plural = "Categories"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -53,7 +52,7 @@ class Snippet(models.Model):
     example = models.TextField(blank=True, null=True, unique=True)
     description = models.TextField(blank=True, null=True)
 
-    snippets = models.ManyToManyField('self', blank=True, related_name='parent')
+    snippets = models.ManyToManyField('self', blank=True, symmetrical=False, related_name='parent')
     categories = models.ManyToManyField(Category, blank=True, related_name='snippets')
 
     # Metadata
@@ -64,7 +63,7 @@ class Snippet(models.Model):
     class Meta:
         ordering = ('rank',)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
 

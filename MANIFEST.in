@@ -1,8 +1,0 @@
-recursive-include docs *
-recursive-include snippets/templates *
-
-include LICENSE
-include README
-include *.txt
-
-prune example/

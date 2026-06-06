@@ -1,0 +1,57 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "django-snippets-db"
+dynamic = ["version"]
+description = "Reusable Django app for storing and serving reusable code snippets."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+    { name = "Rangertaha", email = "rangertaha@gmail.com" },
+]
+keywords = ["django", "snippets", "code", "rest"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 5.2",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "Django>=5.2,<5.3",
+    "djangorestframework>=3.16",
+]
+
+[project.optional-dependencies]
+example = [
+    "django-bootstrap3>=26.1",
+]
+
+[project.urls]
+Homepage = "https://github.com/Rangertaha/django-snippets-db"
+Repository = "https://github.com/Rangertaha/django-snippets-db"
+
+[tool.hatch.version]
+path = "snippets/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["snippets"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/snippets",
+    "/README.md",
+    "/LICENSE",
+]

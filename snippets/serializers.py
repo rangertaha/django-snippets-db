@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
 from rest_framework import serializers
 
 from .models import Snippet, Category
 
 
 class SnippetSerializer(serializers.HyperlinkedModelSerializer):
-    categories = serializers.StringRelatedField(many=True)
+    categories = serializers.StringRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Snippet

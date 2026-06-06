@@ -1,12 +1,7 @@
-# -*- coding: utf-8 -*-
-from django.conf.urls import patterns, include, url
 from django.contrib import admin
-
-admin.autodiscover()
-
+from django.urls import include, path
 
 urlpatterns = [
-
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'', include('snippets.urls')),
+    path('admin/', admin.site.urls),
+    path('', include('snippets.urls')),
 ]

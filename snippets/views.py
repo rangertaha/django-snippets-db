@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.views.generic import ListView, DetailView
 from rest_framework import viewsets
 
@@ -11,7 +10,7 @@ class SnippetViewDetail(DetailView):
     model = Snippet
 
     def get_context_data(self, **kwargs):
-        context = super(SnippetViewDetail, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['categories'] = Category.objects.filter().distinct()
         context['form'] = SnippetForm()
         return context
@@ -30,7 +29,7 @@ class SnippetViewList(ListView):
             return self.model.objects.all()
 
     def get_context_data(self, **kwargs):
-        context = super(SnippetViewList, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['categories'] = Category.objects.filter().distinct()
         context['form'] = SnippetForm()
         return context

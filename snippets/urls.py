@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-from django.conf.urls import url, include
+from django.urls import include, path, re_path
 from rest_framework import routers
 
 from .views import SnippetViewDetail, SnippetViewList, SnippetAPIViewSet, CategoryAPIViewSet
@@ -10,15 +9,7 @@ router.register(r'categories', CategoryAPIViewSet)
 
 
 urlpatterns = [
-    url(r'^api/', include(router.urls)),
-
-    url(r'^$', SnippetViewList.as_view(), name='snippet-list'),
-    url(r'^(?P<slug>.*)$', SnippetViewDetail.as_view(), name='snippet-detail'),
-
-
-
-
+    path('api/', include(router.urls)),
+    path('', SnippetViewList.as_view(), name='snippet-list'),
+    re_path(r'^(?P<slug>.*)$', SnippetViewDetail.as_view(), name='snippet-detail'),
 ]
-
-
-
