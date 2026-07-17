@@ -52,8 +52,8 @@ class Snippet(models.Model):
     categories = models.ManyToManyField(Category, blank=True, related_name="snippets")
 
     # Metadata
-    created = models.DateTimeField(_("Created"), auto_now=True, auto_now_add=False)
-    updated = models.DateTimeField(_("Updated"), auto_now=False, auto_now_add=True)
+    created = models.DateTimeField(_("Created"), auto_now=False, auto_now_add=True)
+    updated = models.DateTimeField(_("Updated"), auto_now=True, auto_now_add=False)
     active = models.BooleanField(_("Active"), default=False)
 
     class Meta:

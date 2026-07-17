@@ -188,13 +188,10 @@ class SnippetViewTests(TestCase):
 
 
 class SnippetTimestampTests(TestCase):
-    """Pin down the CURRENT timestamp behavior of Snippet.
+    """Verify the timestamp semantics of Snippet.
 
-    Note: ``created`` uses ``auto_now=True`` (refreshed on every save) and
-    ``updated`` uses ``auto_now_add=True`` (set once at creation), which is
-    the reverse of the conventional semantics. Correcting it requires a
-    migration and is tracked as a follow-up; these tests document the
-    behavior as-is so the swap is a deliberate, visible change.
+    ``created`` uses ``auto_now_add=True`` (set once at insert) and
+    ``updated`` uses ``auto_now=True`` (refreshed on every save).
     """
 
     def test_both_timestamps_set_on_create(self):
@@ -202,21 +199,21 @@ class SnippetTimestampTests(TestCase):
         self.assertIsNotNone(snippet.created)
         self.assertIsNotNone(snippet.updated)
 
-    def test_created_is_refreshed_on_every_save(self):
+    def test_created_is_set_only_at_creation(self):
         snippet = Snippet.objects.create(title="List files", code="ls -la")
         first_created = snippet.created
         snippet.title = "List files verbosely"
         snippet.save()
         snippet.refresh_from_db()
-        self.assertGreater(snippet.created, first_created)
+        self.assertEqual(snippet.created, first_created)
 
-    def test_updated_is_set_only_at_creation(self):
+    def test_updated_is_refreshed_on_every_save(self):
         snippet = Snippet.objects.create(title="List files", code="ls -la")
         first_updated = snippet.updated
         snippet.title = "List files verbosely"
         snippet.save()
         snippet.refresh_from_db()
-        self.assertEqual(snippet.updated, first_updated)
+        self.assertGreater(snippet.updated, first_updated)
 
 
 class AdminTests(TestCase):

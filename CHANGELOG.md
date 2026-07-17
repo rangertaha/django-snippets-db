@@ -17,9 +17,9 @@ project has not yet been published to PyPI.
   read dynamically from `snippets/__init__.py`.
 - Initial database migration (`0001_initial`) for the `Snippet` and
   `Category` models.
-- Test suite (41 tests) covering models (including the current
-  created/updated timestamp behavior), forms, serializers, the REST API,
-  the list/detail views, and the admin.
+- Test suite (41 tests) covering models (including the created/updated
+  timestamp behavior), forms, serializers, the REST API, the list/detail
+  views, and the admin.
 - GitHub Actions CI workflow running the test suite, Ruff, and mypy on
   Python 3.12, 3.13, and 3.14.
 - GitHub Actions publish workflow releasing to PyPI via Trusted Publishing
@@ -40,17 +40,19 @@ project has not yet been published to PyPI.
   `path()`/`re_path()`, `ugettext_lazy` with `gettext_lazy`,
   `__unicode__` with `__str__`, and modules reformatted/linted with Ruff.
 
+### Fixed
+
+- `Snippet.created` and `Snippet.updated` had swapped semantics
+  (`created` used `auto_now=True`, `updated` used `auto_now_add=True`).
+  `created` now uses `auto_now_add=True` (set once at insert) and
+  `updated` uses `auto_now=True` (refreshed on every save), with a
+  migration (`0002_fix_snippet_timestamps`) and tests updated to assert
+  the correct behavior.
+
 ### Removed
 
 - Legacy `setup.py`, `MANIFEST.in`, and `requirements.txt` (superseded by
   `pyproject.toml`).
-
-### Known issues
-
-- `Snippet.created` uses `auto_now=True` and `Snippet.updated` uses
-  `auto_now_add=True` — the conventional semantics are swapped. Fixing this
-  changes behavior and requires a migration; it is deliberately left as-is
-  for now and pinned by tests documenting the current behavior.
 
 ## [0.0.1] - 2016-05-30
 
