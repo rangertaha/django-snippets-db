@@ -1,26 +1,20 @@
-import logging
-
 from django.db import models
-from django.utils.translation import gettext_lazy as _
-from django.template.defaultfilters import slugify
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from django.template.defaultfilters import slugify
+from django.utils.translation import gettext_lazy as _
 
 ICONS = (
-    ('fa-linux', 'Linux'),
-    ('fa-windows ', 'Windows'),
-    ('fa-apple', 'Apple'),
-
-    ('fa-firefox', 'Firefox'),
-    ('fa-chrome ', 'Chrome'),
-    ('fa-internet-explorer', 'Internet Explorer'),
-
-    ('fa-file', 'Physical File'),
-    ('fa-file-o', 'Virtual File'),
-
-    ('fa-folder', 'Folder'),
-    ('fa-folder-o', 'Folder White'),
-
+    ("fa-linux", "Linux"),
+    ("fa-windows ", "Windows"),
+    ("fa-apple", "Apple"),
+    ("fa-firefox", "Firefox"),
+    ("fa-chrome ", "Chrome"),
+    ("fa-internet-explorer", "Internet Explorer"),
+    ("fa-file", "Physical File"),
+    ("fa-file-o", "Virtual File"),
+    ("fa-folder", "Folder"),
+    ("fa-folder-o", "Folder White"),
 )
 
 
@@ -35,7 +29,7 @@ class Category(models.Model):
     # category =
 
     class Meta:
-        ordering = ('rank', )
+        ordering = ("rank",)
         verbose_name_plural = "Categories"
 
     def __str__(self):
@@ -52,16 +46,18 @@ class Snippet(models.Model):
     example = models.TextField(blank=True, null=True, unique=True)
     description = models.TextField(blank=True, null=True)
 
-    snippets = models.ManyToManyField('self', blank=True, symmetrical=False, related_name='parent')
-    categories = models.ManyToManyField(Category, blank=True, related_name='snippets')
+    snippets = models.ManyToManyField(
+        "self", blank=True, symmetrical=False, related_name="parent"
+    )
+    categories = models.ManyToManyField(Category, blank=True, related_name="snippets")
 
     # Metadata
-    created = models.DateTimeField(_('Created'), auto_now=True, auto_now_add=False)
-    updated = models.DateTimeField(_('Updated'), auto_now=False, auto_now_add=True)
-    active = models.BooleanField(_('Active'), default=False)
+    created = models.DateTimeField(_("Created"), auto_now=True, auto_now_add=False)
+    updated = models.DateTimeField(_("Updated"), auto_now=False, auto_now_add=True)
+    active = models.BooleanField(_("Active"), default=False)
 
     class Meta:
-        ordering = ('rank',)
+        ordering = ("rank",)
 
     def __str__(self):
         return self.title
@@ -69,13 +65,13 @@ class Snippet(models.Model):
 
 @receiver(pre_save, sender=Snippet)
 def pre_snippet(sender, **kwargs):
-    snippet = kwargs['instance']
+    snippet = kwargs["instance"]
     if not snippet.slug:
         snippet.slug = slugify(snippet.title)
 
 
 @receiver(pre_save, sender=Category)
 def slugify_category_name(sender, **kwargs):
-    category = kwargs['instance']
+    category = kwargs["instance"]
     if not category.slug:
         category.slug = slugify(category.name)

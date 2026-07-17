@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Snippet, Category
+from .models import Category, Snippet
 
 
 class SnippetSerializer(serializers.HyperlinkedModelSerializer):
@@ -8,11 +8,18 @@ class SnippetSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Snippet
-        fields = ('rank', 'categories', 'title', 'code',
-                  'description', 'created', 'updated')
+        fields = (
+            "rank",
+            "categories",
+            "title",
+            "code",
+            "description",
+            "created",
+            "updated",
+        )
 
 
 class CategorySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Category
-        fields = ('rank', 'slug', 'name', 'description')
+        fields = ("rank", "slug", "name", "description")

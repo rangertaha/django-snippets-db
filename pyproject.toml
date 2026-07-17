@@ -7,7 +7,7 @@ name = "django-snippets-db"
 dynamic = ["version"]
 description = "Reusable Django app for storing and serving reusable code snippets."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 license = "MIT"
 license-files = ["LICENSE"]
 authors = [
@@ -23,15 +23,14 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
     "Django>=5.2,<5.3",
-    "djangorestframework>=3.16",
+    "djangorestframework>=3.17",
 ]
 
 [project.optional-dependencies]
@@ -42,16 +41,63 @@ example = [
 [project.urls]
 Homepage = "https://github.com/Rangertaha/django-snippets-db"
 Repository = "https://github.com/Rangertaha/django-snippets-db"
+Issues = "https://github.com/Rangertaha/django-snippets-db/issues"
+Changelog = "https://github.com/Rangertaha/django-snippets-db/blob/master/CHANGELOG.md"
+
+[dependency-groups]
+dev = [
+    "coverage>=7",
+    "mypy>=1",
+    "ruff>=0.15",
+]
 
 [tool.hatch.version]
-path = "snippets/__init__.py"
+path = "src/snippets/__init__.py"
 
 [tool.hatch.build.targets.wheel]
-packages = ["snippets"]
+packages = ["src/snippets"]
 
 [tool.hatch.build.targets.sdist]
 include = [
-    "/snippets",
+    "/src",
     "/README.md",
     "/LICENSE",
+    "/CHANGELOG.md",
 ]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 88
+extend-exclude = ["src/snippets/migrations"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+    "DJ",  # flake8-django
+]
+ignore = [
+    # null=True on string fields: fixing requires a schema migration
+    # (behavior-changing); tracked as a follow-up.
+    "DJ001",
+]
+
+[tool.mypy]
+python_version = "3.12"
+files = ["src/snippets"]
+exclude = ["migrations"]
+ignore_missing_imports = true
+check_untyped_defs = true
+warn_unused_configs = true
+
+[tool.coverage.run]
+source = ["snippets"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+omit = ["*/migrations/*", "*/tests.py"]

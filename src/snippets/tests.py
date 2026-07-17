@@ -1,9 +1,11 @@
+from django.contrib import admin
+from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
-
 from rest_framework import status
 from rest_framework.test import APIClient
 
+from .admin import CategoryAdmin, SnippetAdmin
 from .forms import SnippetForm
 from .models import Category, Snippet
 from .serializers import CategorySerializer, SnippetSerializer
@@ -44,9 +46,7 @@ class SnippetModelTests(TestCase):
         self.assertEqual(snippet.slug, "list-all-files")
 
     def test_explicit_slug_is_preserved(self):
-        snippet = Snippet.objects.create(
-            title="List files", slug="ls", code="ls -la"
-        )
+        snippet = Snippet.objects.create(title="List files", slug="ls", code="ls -la")
         self.assertEqual(snippet.slug, "ls")
 
     def test_ordering_is_by_rank(self):
@@ -98,7 +98,15 @@ class SerializerTests(TestCase):
 
         self.assertEqual(
             set(data),
-            {"rank", "categories", "title", "code", "description", "created", "updated"},
+            {
+                "rank",
+                "categories",
+                "title",
+                "code",
+                "description",
+                "created",
+                "updated",
+            },
         )
         # categories is a StringRelatedField -> str(Category) == name
         self.assertEqual(data["categories"], ["Shell"])
@@ -156,12 +164,8 @@ class SnippetViewTests(TestCase):
         self.assertIsInstance(response.context["form"], SnippetForm)
 
     def test_list_view_search_filters_by_active_and_title(self):
-        match = Snippet.objects.create(
-            title="List files", code="ls -la", active=True
-        )
-        Snippet.objects.create(
-            title="List files quietly", code="ls", active=False
-        )
+        match = Snippet.objects.create(title="List files", code="ls -la", active=True)
+        Snippet.objects.create(title="List files quietly", code="ls", active=False)
         Snippet.objects.create(title="Print dir", code="pwd", active=True)
 
         response = self.client.get(reverse("snippet-list"), {"q": "list"})
@@ -177,9 +181,139 @@ class SnippetViewTests(TestCase):
 
     def test_detail_view_renders(self):
         snippet = Snippet.objects.create(title="List files", code="ls -la")
-        response = self.client.get(
-            reverse("snippet-detail", args=[snippet.slug])
-        )
+        response = self.client.get(reverse("snippet-detail", args=[snippet.slug]))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTemplateUsed(response, "snippets/snippet_detail.html")
         self.assertEqual(response.context["object"], snippet)
+
+
+class SnippetTimestampTests(TestCase):
+    """Pin down the CURRENT timestamp behavior of Snippet.
+
+    Note: ``created`` uses ``auto_now=True`` (refreshed on every save) and
+    ``updated`` uses ``auto_now_add=True`` (set once at creation), which is
+    the reverse of the conventional semantics. Correcting it requires a
+    migration and is tracked as a follow-up; these tests document the
+    behavior as-is so the swap is a deliberate, visible change.
+    """
+
+    def test_both_timestamps_set_on_create(self):
+        snippet = Snippet.objects.create(title="List files", code="ls -la")
+        self.assertIsNotNone(snippet.created)
+        self.assertIsNotNone(snippet.updated)
+
+    def test_created_is_refreshed_on_every_save(self):
+        snippet = Snippet.objects.create(title="List files", code="ls -la")
+        first_created = snippet.created
+        snippet.title = "List files verbosely"
+        snippet.save()
+        snippet.refresh_from_db()
+        self.assertGreater(snippet.created, first_created)
+
+    def test_updated_is_set_only_at_creation(self):
+        snippet = Snippet.objects.create(title="List files", code="ls -la")
+        first_updated = snippet.updated
+        snippet.title = "List files verbosely"
+        snippet.save()
+        snippet.refresh_from_db()
+        self.assertEqual(snippet.updated, first_updated)
+
+
+class AdminTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_superuser(
+            username="admin", email="admin@example.com", password="secret"
+        )
+        self.client.force_login(self.user)
+
+    def test_models_are_registered(self):
+        self.assertIn(Snippet, admin.site._registry)
+        self.assertIn(Category, admin.site._registry)
+        self.assertIsInstance(admin.site._registry[Snippet], SnippetAdmin)
+        self.assertIsInstance(admin.site._registry[Category], CategoryAdmin)
+
+    def test_snippet_admin_config(self):
+        self.assertEqual(
+            SnippetAdmin.list_display, ("rank", "code", "title", "description")
+        )
+
+    def test_category_admin_config(self):
+        self.assertEqual(CategoryAdmin.list_display, ("name", "description"))
+        self.assertEqual(CategoryAdmin.search_fields, ("name", "description"))
+
+    def test_snippet_changelist_renders(self):
+        Snippet.objects.create(title="List files", code="ls -la")
+        response = self.client.get(reverse("admin:snippets_snippet_changelist"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_category_changelist_renders(self):
+        Category.objects.create(name="Shell")
+        response = self.client.get(reverse("admin:snippets_category_changelist"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_category_changelist_search(self):
+        Category.objects.create(name="Shell")
+        Category.objects.create(name="Python")
+        response = self.client.get(
+            reverse("admin:snippets_category_changelist"), {"q": "shell"}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["cl"].result_count, 1)
+
+
+class SnippetAPIDetailTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.snippet = Snippet.objects.create(title="List files", code="ls -la", rank=1)
+
+    def test_retrieve_snippet(self):
+        response = self.client.get(f"/api/snippets/{self.snippet.pk}/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["title"], "List files")
+
+    def test_update_snippet(self):
+        response = self.client.patch(
+            f"/api/snippets/{self.snippet.pk}/",
+            {"title": "List all files"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.snippet.refresh_from_db()
+        self.assertEqual(self.snippet.title, "List all files")
+
+    def test_delete_snippet(self):
+        response = self.client.delete(f"/api/snippets/{self.snippet.pk}/")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Snippet.objects.count(), 0)
+
+    def test_retrieve_category(self):
+        category = Category.objects.create(name="Shell")
+        response = self.client.get(f"/api/categories/{category.pk}/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["name"], "Shell")
+
+    def test_api_root_lists_endpoints(self):
+        response = self.client.get("/api/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("snippets", response.data)
+        self.assertIn("categories", response.data)
+
+
+class SnippetViewEdgeTests(TestCase):
+    def test_detail_view_unknown_slug_returns_404(self):
+        response = self.client.get(reverse("snippet-detail", args=["no-such-snippet"]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_list_view_is_paginated_by_ten(self):
+        for i in range(12):
+            Snippet.objects.create(title=f"Snippet {i}", code=f"cmd {i}")
+        response = self.client.get(reverse("snippet-list"))
+        self.assertEqual(len(response.context["object_list"]), 10)
+        self.assertTrue(response.context["page_obj"].has_next())
+
+    def test_list_view_second_page(self):
+        for i in range(12):
+            Snippet.objects.create(title=f"Snippet {i}", code=f"cmd {i}")
+        response = self.client.get(reverse("snippet-list"), {"page": 2})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["object_list"]), 2)
