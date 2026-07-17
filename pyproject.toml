@@ -56,6 +56,7 @@ path = "src/snippets/__init__.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/snippets"]
+exclude = ["src/snippets/tests.py"]
 
 [tool.hatch.build.targets.sdist]
 include = [

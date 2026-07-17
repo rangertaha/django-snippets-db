@@ -77,5 +77,5 @@ Initial development version; never published to PyPI.
   file-type/extension choices) were dropped during initial development as
   the app was refocused on code snippets.
 
-[Unreleased]: https://github.com/Rangertaha/django-snippets-db/compare/0d8b46c...HEAD
+[Unreleased]: https://github.com/Rangertaha/django-snippets-db/compare/f8178b6...HEAD
 [0.0.1]: https://github.com/Rangertaha/django-snippets-db/commits/f8178b6
